@@ -8,7 +8,6 @@
 #define F_CPU (16000000UL)
 
 #include <avr/io.h>
-//#include <avr/iom128.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <inttypes.h>
@@ -95,17 +94,16 @@ int main(void)
 	
 	while(1)
     {
-	
 		button();
-		
-		if (!menu_select_flag)									//ha 3. gomb nem volt még megnyomva
+		!menu_select_flag ? menu1(foods_tomb) : menu2(foods_tomb);	
+		/*if (!menu_select_flag)									//ha 3. gomb nem volt még megnyomva
 		{
 			menu1(foods_tomb);									//menü meghívása, lista menü
 		}
 		if (menu_select_flag)									//ha 3. gombot megnyomtuk
 		{
 			menu2(foods_tomb);									//menu meghívása, részletes (detailed) menü
-		}
+		}*/
 	}
 }
 
@@ -126,35 +124,10 @@ ISR(TIMER1_COMPA_vect)
 			lcd_xy(7,1);
 			lcd_Puts(data_SZH_tomb);
 			lcd_Puts(" g");								//eddig
-			
-			//if (tick_timer1 == 50)
-			//{
-			//hc_05_bluetooth_transmit_string("ready");
-			//if ((strcmp(string_ready,"")))
-			//{
-				//if  (!(strcmp((hc_05_bluetooth_receive_string(string_ready, 'y')),"ready")))
-				//{
-			//if (tick_timer1 == 50)
-			//{	
-				hc_05_bluetooth_transmit_string(data_grams_tomb);
-				hc_05_bluetooth_transmit_string("OK");
-				tick_timer1 = 0;
-			//}
-				//}
-			//}
-		/*		if (!(strcmp(string_ready,"ready")))
-				{
-					while (*string_ready)
-					{						
-						string_ready[i] = 0;
-						i++;
-					}
-				}*/
-				
-			//	hc_05_bluetooth_transmit_string("trim");
-			//	tick_timer1 = 0;
-			//}
-			
+
+			hc_05_bluetooth_transmit_string(data_grams_tomb);
+			hc_05_bluetooth_transmit_string("OK");
+			tick_timer1 = 0;
 		}
 		else
 		{
@@ -179,8 +152,6 @@ void timer1_init()
 	TIMSK1 = (1 << OCIE1A);								//CTC mód engedélyez
 	sei();												//interrupt engedélyez
 }
-
-
 
 void menu1(Foods *t)
 {
@@ -354,7 +325,6 @@ int intToStr(int x, char str[], int d)
 		str[i++] = (x%10) + '0';
 		x = x/10;
 	}
-
 	// If number of digits required is more, then
 	// add 0s at the beginning
 	while (i < d)
@@ -387,7 +357,6 @@ extern uint32_t read_average(uint8_t times)
 		sum += readAD();
 		i++;
 	}
-	
 	return sum/times;
 }
 
@@ -405,24 +374,4 @@ extern void tare(uint8_t times)
 {
 	uint32_t sum = get_units(times);
 	calibr = sum;
-/*	lcd_xy(7,0);										//törli az értékeket (csak)
-	lcd_Puts("         ");								//
-	lcd_xy(7,1);										// ---     ||     --- (u.a., mint fölül)
-	lcd_Puts("         ");
-*/
 }
-
-//-----------------------------------------------------------------------------------------------------//
-
-		/*fasza, ne töröld ki! (törölhetõ már)
-		old_data = data;
-		data = get_units(10);
-		data = data-calibr;
-		ftoa(data,tomb,2);
-		if (data < old_data)
-		{
-			//lcd_write_instruction(lcd_Clear);
-			lcd_xy(0,1);
-			lcd_Puts("                ");
-		}*/
-		
