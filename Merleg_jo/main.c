@@ -23,8 +23,7 @@
 #include "USART.h"
 #include "HC05.h"
 
-#define tomb_length		10
-
+#define tomb_length	10
 #define BAUD 9600
 #define MYUBRR F_CPU/16/BAUD-1
 
@@ -51,12 +50,8 @@ Foods foods_tomb[tomb_length];						//egyes elemekre mutató tömb
 uint8_t tomb_poz = 0;								//aktuális lista elem indexe
 uint8_t tomb_poz_old = 0;							//eltárolásra, összehasonlításra szolgál
 uint8_t menu_select_flag = 0;						//0 -> lista, 1 -> detailed
-//uint8_t menu1_flag = 1, menu2_flag = 0;				
 
-//uint32_t offset = 6400;								//offset beállítása
 uint32_t offset = 0;
-//uint32_t offset = 8594600;								
-//float scale = 417.6;								//kalibráció beállítása
 float scale = 401.3;
 uint32_t calibr = 0;								//kalibráció beállítása, elején beolvas, ezzel kappunk grammokat
 
@@ -66,7 +61,6 @@ float data_SZH = 0;									//kiolvasott érték szénhidrátban
 float old_data_raw = 0;								//összehasonlításhoz használt változó (lsd. lejjebb)
 char data_grams_tomb[16];							//ftoa miatt tömb, grammoknak
 char data_SZH_tomb[16];								//ftoa miatt tömb,SZH-nak
-
 
 void timer1_init(void);								//0.1 sec-es timer
 void peldanyosit(void);								//peldanyositja az egyes eteleket
@@ -82,7 +76,6 @@ uint32_t read_average(uint8_t);						//beolvas annyiszor, amennyi számot adunk p
 double get_value(uint8_t times);					//az átlagból levonja az offsetet
 float get_units(uint8_t times);						//get_value-t (átlagból levont offsetet) még elosztja a scale értékkel (kalibráló érték)
 void tare(uint8_t);									//táráz
-
 
 char string_rec[10];
 char string_ready[10];
@@ -119,8 +112,6 @@ int main(void)
 ISR(TIMER1_COMPA_vect)
 {
 	tick_timer1++;
-	//uint8_t i = 0;
-	
 	if (menu_select_flag)								//ha megnyomtuk a 3. gombot, csak akkor hajtja végre
 	{
 		if (data_grams > 0)								//ha nagyobb a kiolvasott, kalibrált, gramm-ban értendõ érték, mint 0, csak akkor írja ki
