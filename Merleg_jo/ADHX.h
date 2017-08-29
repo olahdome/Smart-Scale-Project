@@ -5,7 +5,7 @@
  *  Author: Dome
  */ 
 
-//MIN - 800000 -> MAX - 7FFFFF
+//MIN: 800000 -> MAX: 7FFFFF
 
 
 #ifndef ADHX_H_

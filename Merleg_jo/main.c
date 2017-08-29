@@ -215,11 +215,11 @@ void button()
 				tomb_poz--;								//tomb_poz-t lépteti, lépteti a kiírást
 				while(btn2_pressed);					//prellmentesít
 			}
-			if (btn2_pressed && (menu_select_flag))		//	próba, nem jó!
+			/*if (btn2_pressed && (menu_select_flag))		//	próba, nem jó!
 			{
 				tare(50);
 				while (btn2_pressed);
-			}
+			}*/
 			if (btn3_pressed)							//3. gomb nyomása
 			{
 				menu_select_flag = ~menu_select_flag;	//menu választó negálása
