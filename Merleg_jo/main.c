@@ -18,6 +18,7 @@
 
 #include "LCD.h"
 #include "button.h"
+#include "LED.h"
 #include "ADHX.h"
 #include "USART.h"
 #include "HC05.h"
@@ -84,6 +85,7 @@ int main(void)
 	timer1_init();							//timer1 inicializálása
 	lcd_init();								//LCD inicializálása
 	button_init();							//gombok inicializálása (led-nek is)
+	LED_init();
 	ADC_init();								//ADC inicializálása
 	peldanyosit();							//kommentelve fent
 	tombbe_tesz();							//kommentelve fent
