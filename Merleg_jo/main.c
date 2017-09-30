@@ -89,7 +89,6 @@ int main(void)
 	ADC_init();								//ADC inicializálása
 	peldanyosit();							//kommentelve fent
 	tombbe_tesz();							//kommentelve fent
-	
 	USART_init(MYUBRR);
 	
 	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
@@ -97,15 +96,7 @@ int main(void)
 	while(1)
     {
 		button();
-		!menu_select_flag ? menu1(foods_tomb) : menu2(foods_tomb);	
-		/*if (!menu_select_flag)									//ha 3. gomb nem volt még megnyomva
-		{
-			menu1(foods_tomb);									//menü meghívása, lista menü
-		}
-		if (menu_select_flag)									//ha 3. gombot megnyomtuk
-		{
-			menu2(foods_tomb);									//menu meghívása, részletes (detailed) menü
-		}*/
+		!menu_select_flag ? menu1(foods_tomb) : menu2(foods_tomb);
 	}
 }
 
@@ -162,11 +153,11 @@ void menu1(Foods *t)
 	lcd_xy(1,0);									//kurzor -> 1. sor 2. hely (>-nek legyen helye)
 	lcd_Puts(t[tomb_poz].nev);						//kaja kiíratása
 	lcd_xy(1,1);									//pozícionálás
-	if (tomb_poz != 9)								//ha nem az utolsó elem,
+	if (tomb_poz != tomb_length-1)1								//ha nem az utolsó elem,
 	{
 		lcd_Puts(t[(tomb_poz+1)].nev);				//akkor kiteszi az 1-el odébb lévõ kaját is
 	}
-	if (tomb_poz == tomb_length-1)					//ha az utolsó elem,
+	else (tomb_poz == tomb_length-1)					//ha az utolsó elem,
 	{
 		lcd_Puts(t[0].nev);							//akkor az 1.-t teszi ki
 	}
@@ -197,8 +188,8 @@ void menu2(Foods *t)
 
 void button()
 {
-			tomb_poz_old = tomb_poz;					//	***
-			//
+			tomb_poz_old = tomb_poz;					//	***  //
+			
 			if (btn1_pressed && (!menu_select_flag))	//1. gomb nyomása
 			{
 				tomb_poz++;								//tomb_poz-t lépteti, lépteti a kiírást
@@ -217,11 +208,6 @@ void button()
 				tomb_poz--;								//tomb_poz-t lépteti, lépteti a kiírást
 				while(btn2_pressed);					//prellmentesít
 			}
-			/*if (btn2_pressed && (menu_select_flag))		//	próba, nem jó!
-			{
-				tare(50);
-				while (btn2_pressed);
-			}*/
 			if (btn3_pressed)							//3. gomb nyomása
 			{
 				menu_select_flag = ~menu_select_flag;	//menu választó negálása
@@ -229,7 +215,6 @@ void button()
 				lcd_write_instruction(lcd_Clear);		//képernyõ törlése
 				while(btn3_pressed);					//prellmentesít
 			}
-			
 			if (tomb_poz_old != tomb_poz)				//csak akkor törli a képernyõt, ha változott a kiírt kaja ***
 			{
 				lcd_write_instruction(lcd_Clear);

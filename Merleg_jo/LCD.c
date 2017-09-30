@@ -134,59 +134,13 @@ extern void lcd_Puts(char theString[])
 		_delay_us(80);                              // 40 uS delay (min)
 	}
 }
-/*
-extern void lcd_goto(unsigned char row, unsigned char column)
-{
-	
-	if((column>=16) || (row>=2))return;
-	if(row>=2)
-	{
-		row = row - 2;
-		column = column + 16;
-	}
-	lcd_write_instruction((1<<7)|(row<<6)|column);
-	//lcd_Puts(" ");
-}*/
 
 void lcd_xy(unsigned char x, unsigned char y){
 	switch(y){
 		case 0: {y=0x00 + 0x80 + x; break;}
 		case 1: {y=0x40 + 0x80 + x; break;}
-	//	case 2: {y=0x10 + 0x80 + x; break;}
-	//		case 3: {y=0x50 + 0x80 + x; break;}
 		default: break;
 	}
 	lcd_write_instruction((uint8_t)y);
 	lcd_Puts(" ");
 }
-/*
-void LCD_sendIntN(int32_t val, uint8_t len){
-	char s[16];
-	uint32_t i = 0, negative = 0;
-	if(val < 0){
-		negative = 1;
-		val = -val;
-	}
-	while(i<15 && i<len){
-		s[i++]=val%10+'0';
-		val /= 10;
-	}
-	if(negative){
-		if(i>15) i=15;
-		s[i++] = '-';
-	}
-	//  while(i--) MAP_UARTCharPut(UartBase, s[i]);
-	while(i--) LCD_data(s[i]);
-}
-
-void LCD_sendFloat(float val, uint8_t ilen, uint8_t flen)
-{
-	uint8_t i = 0;
-	// int32_t ipart;
-	LCD_sendIntN((int32_t) val, ilen);
-	LCD_data((unsigned char) '.');
-	if(val < 0) val = -val;
-	for(i=0;i<flen;i++) val *= 10;
-	LCD_sendIntN((int32_t) val, flen);
-}
-*/
