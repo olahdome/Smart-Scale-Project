@@ -16,6 +16,4 @@
 extern void button_init()
 {
 	DDRB &= ~((1 << btn1) | (1 << btn2) | (1 << btn3));
-	DDRB |= (1 << led);
-	//DDRC &= ~;
 }

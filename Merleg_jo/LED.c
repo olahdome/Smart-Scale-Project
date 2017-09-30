@@ -9,7 +9,7 @@
 #endif
 
 #include <avr/io.h>
-#include "button.h"
+#include "LED.h"
 
 extern void LED_init()
 {

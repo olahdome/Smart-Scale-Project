@@ -22,6 +22,7 @@
 #include "ADHX.h"
 #include "USART.h"
 #include "HC05.h"
+#include "scale_functions.h"
 
 #define tomb_length	10
 #define BAUD 9600
@@ -51,10 +52,6 @@ uint8_t tomb_poz = 0;								//aktuális lista elem indexe
 uint8_t tomb_poz_old = 0;							//eltárolásra, összehasonlításra szolgál
 uint8_t menu_select_flag = 0;						//0 -> lista, 1 -> detailed
 
-uint32_t offset = 0;
-float scale = 401.3;
-uint32_t calibr = 0;								//kalibráció beállítása, elején beolvas, ezzel kappunk grammokat
-
 float data_raw = 0;									//kiolvasott, formázatlan, nyers érték
 float data_grams = 0;								//kiolvasott érték grammban
 float data_SZH = 0;									//kiolvasott érték szénhidrátban
@@ -72,10 +69,6 @@ void button(void);									//gombokat vizsgálja, hogy megnyomtuk e (részletes le
 void ftoa(float n, char *res, int afterpoint);		//float to string
 int intToStr(int x, char str[], int d);				//int to string
 void reverse(char *str, int len);					//megfordítja a stringet
-uint32_t read_average(uint8_t);						//beolvas annyiszor, amennyi számot adunk paraméternek, kiszámolja az átlagát
-double get_value(uint8_t times);					//az átlagból levonja az offsetet
-float get_units(uint8_t times);						//get_value-t (átlagból levont offsetet) még elosztja a scale értékkel (kalibráló érték)
-void tare(uint8_t);									//táráz
 
 char string_rec[10];
 char string_ready[10];
@@ -157,7 +150,7 @@ void menu1(Foods *t)
 	{
 		lcd_Puts(t[(tomb_poz+1)].nev);				//akkor kiteszi az 1-el odébb lévõ kaját is
 	}
-	else (tomb_poz == tomb_length-1)				//ha az utolsó elem,
+	else// (tomb_poz == tomb_length-1)				//ha az utolsó elem,
 	{
 		lcd_Puts(t[0].nev);							//akkor az 1.-t teszi ki
 	}
@@ -332,33 +325,4 @@ void reverse(char *str, int len)
 		str[j] = temp;
 		i++; j--;
 	}
-}
-
-extern uint32_t read_average(uint8_t times)
-{
-	uint32_t sum = 0;
-	uint8_t i = 0;
-	
-	while(i < times)
-	{
-		sum += readAD();
-		i++;
-	}
-	return sum/times;
-}
-
-extern double get_value(uint8_t times)
-{
-	return read_average(times) - offset;
-}
-
-extern float get_units(uint8_t times)
-{
-	return get_value(times) / scale;
-}
-
-extern void tare(uint8_t times)
-{
-	uint32_t sum = get_units(times);
-	calibr = sum;
 }
