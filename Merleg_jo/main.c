@@ -153,11 +153,11 @@ void menu1(Foods *t)
 	lcd_xy(1,0);									//kurzor -> 1. sor 2. hely (>-nek legyen helye)
 	lcd_Puts(t[tomb_poz].nev);						//kaja kiíratása
 	lcd_xy(1,1);									//pozícionálás
-	if (tomb_poz != tomb_length-1)1								//ha nem az utolsó elem,
+	if (tomb_poz != tomb_length-1)					//ha nem az utolsó elem,
 	{
 		lcd_Puts(t[(tomb_poz+1)].nev);				//akkor kiteszi az 1-el odébb lévõ kaját is
 	}
-	else (tomb_poz == tomb_length-1)					//ha az utolsó elem,
+	else (tomb_poz == tomb_length-1)				//ha az utolsó elem,
 	{
 		lcd_Puts(t[0].nev);							//akkor az 1.-t teszi ki
 	}
