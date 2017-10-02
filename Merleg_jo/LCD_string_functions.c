@@ -10,6 +10,7 @@
 #endif
 
 #include <string.h>
+#include <math.h>
 #include "LCD_string_functions.h"
 
 void ftoa(float n, char *res, int afterpoint)

@@ -199,9 +199,17 @@ void button()
 				while(btn2_pressed);					//prellmentesít
 			}
 			if (btn3_pressed)							//3. gomb nyomása
-			{
-				menu_select_flag = ~menu_select_flag;	//menu választó negálása
-			
+			{	
+				menu_select_flag = (menu_select_flag == 0) ? 1 : 0;
+				/*if (menu_select_flag == 0)
+				{
+					menu_select_flag = 1;
+				}
+				else
+				{
+					menu_select_flag = 0;
+				}*/
+				//menu_select_flag = ~menu_select_flag;	//menu választó negálása
 				lcd_write_instruction(lcd_Clear);		//képernyõ törlése
 				while(btn3_pressed);					//prellmentesít
 			}

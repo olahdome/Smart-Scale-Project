@@ -8,8 +8,6 @@
 #ifndef LCD_STRING_FUNCTIONS_H_
 #define LCD_STRING_FUNCTIONS_H_
 
-#include <string.h>
-
 extern void ftoa(float n, char *res, int afterpoint);		//float to string
 extern int intToStr(int x, char str[], int d);				//int to string
 extern void reverse(char *str, int len);					//megfordítja a stringet
