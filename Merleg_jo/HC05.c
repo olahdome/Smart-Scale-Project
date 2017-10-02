@@ -5,6 +5,10 @@
  *  Author: Dome
  */ 
 
+#ifndef F_CPU
+#define F_CPU (16000000UL)
+#endif
+
 #include "HC05.h"
 #include "USART.h"
 #include "inttypes.h"

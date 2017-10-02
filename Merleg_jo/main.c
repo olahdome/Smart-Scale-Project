@@ -23,6 +23,7 @@
 #include "USART.h"
 #include "HC05.h"
 #include "scale_functions.h"
+#include "LCD_string_functions.h"
 
 #define tomb_length	10
 #define BAUD 9600
@@ -65,10 +66,6 @@ void tombbe_tesz(void);								//beletesszük a tömbbe a példányosított struktúrá
 void menu1(Foods *);								//lista menü, kiválasztandó kajára mutató pointer
 void menu2(Foods *);								//részletes (detailed) menü
 void button(void);									//gombokat vizsgálja, hogy megnyomtuk e (részletes leírás a függvénynél)
-
-void ftoa(float n, char *res, int afterpoint);		//float to string
-int intToStr(int x, char str[], int d);				//int to string
-void reverse(char *str, int len);					//megfordítja a stringet
 
 char string_rec[10];
 char string_ready[10];
@@ -150,7 +147,7 @@ void menu1(Foods *t)
 	{
 		lcd_Puts(t[(tomb_poz+1)].nev);				//akkor kiteszi az 1-el odébb lévõ kaját is
 	}
-	else// (tomb_poz == tomb_length-1)				//ha az utolsó elem,
+	else											//ha az utolsó elem,
 	{
 		lcd_Puts(t[0].nev);							//akkor az 1.-t teszi ki
 	}
@@ -269,60 +266,4 @@ void tombbe_tesz()							//az egyes példányosított struktúrákat 1 tömbbe tevése 
 	foods_tomb[7] = rizs;
 	foods_tomb[8] = spagetti;
 	foods_tomb[9] = tarhonya;
-}
-
-//-----------------------------------------------//
-
-void ftoa(float n, char *res, int afterpoint)
-{
-	// Extract integer part
-	int ipart = (int)n;
-
-	// Extract floating part
-	float fpart = n - (float)ipart;
-
-	// convert integer part to string
-	int i = intToStr(ipart, res, 1);
-
-	// check for display option after point
-	if (afterpoint != 0)
-	{
-		res[i] = '.';  // add dot
-
-		// Get the value of fraction part upto given no.
-		// of points after dot. The third parameter is needed
-		// to handle cases like 233.007
-		fpart = fpart * pow(10, afterpoint);
-
-		intToStr((int)fpart, res + i + 1, afterpoint);
-	}
-}
-int intToStr(int x, char str[], int d)
-{
-	int i = 0;
-	while (x)
-	{
-		str[i++] = (x%10) + '0';
-		x = x/10;
-	}
-	// If number of digits required is more, then
-	// add 0s at the beginning
-	while (i < d)
-	str[i++] = '0';
-
-	reverse(str, i);
-	str[i] = '\0';
-	return i;
-}
-
-void reverse(char *str, int len)
-{
-	int i=0, j=len-1, temp;
-	while (i<j)
-	{
-		temp = str[i];
-		str[i] = str[j];
-		str[j] = temp;
-		i++; j--;
-	}
 }
