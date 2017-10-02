@@ -9,6 +9,8 @@
 #define F_CPU (16000000UL)
 #endif
 
+#include "LCD_string_functions.h"
+
 void ftoa(float n, char *res, int afterpoint)
 {
 	// Extract integer part
