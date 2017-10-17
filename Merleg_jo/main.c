@@ -65,6 +65,7 @@ void peldanyosit(void);								//peldanyositja az egyes eteleket
 void tombbe_tesz(void);								//beletesszük a tömbbe a példányosított struktúrákat
 void menu1(Foods *);								//lista menü, kiválasztandó kajára mutató pointer
 void menu2(Foods *);								//részletes (detailed) menü
+void bluetooth_menu();
 void button(void);									//gombokat vizsgálja, hogy megnyomtuk e (részletes leírás a függvénynél)
 
 char string_rec[10];
@@ -80,6 +81,8 @@ int main(void)
 	peldanyosit();							//kommentelve fent
 	tombbe_tesz();							//kommentelve fent
 	USART_init(MYUBRR);
+	
+	bluetooth_menu();
 	
 	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
 	
@@ -175,6 +178,8 @@ void menu2(Foods *t)
 		lcd_Puts(" g");
 	}
 }
+
+
 
 void button()
 {
