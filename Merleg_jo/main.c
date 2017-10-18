@@ -24,9 +24,10 @@
 #include "HC05.h"
 #include "scale_functions.h"
 #include "LCD_string_functions.h"
+#include "bluetooth_connection.h"
 
 #define tomb_length	10
-#define BAUD 9600
+#define BAUD 38400
 #define MYUBRR F_CPU/16/BAUD-1
 
 typedef struct Foods{
@@ -65,7 +66,6 @@ void peldanyosit(void);								//peldanyositja az egyes eteleket
 void tombbe_tesz(void);								//beletesszük a tömbbe a példányosított struktúrákat
 void menu1(Foods *);								//lista menü, kiválasztandó kajára mutató pointer
 void menu2(Foods *);								//részletes (detailed) menü
-void bluetooth_menu();
 void button(void);									//gombokat vizsgálja, hogy megnyomtuk e (részletes leírás a függvénynél)
 
 char string_rec[10];
@@ -73,6 +73,9 @@ char string_ready[10];
 
 int main(void)
 {
+	//char recieve_string[50];
+	uint8_t lcd_select = 0;
+	
 	timer1_init();							//timer1 inicializálása
 	lcd_init();								//LCD inicializálása
 	button_init();							//gombok inicializálása (led-nek is)
@@ -81,8 +84,65 @@ int main(void)
 	peldanyosit();							//kommentelve fent
 	tombbe_tesz();							//kommentelve fent
 	USART_init(MYUBRR);
-	
-	bluetooth_menu();
+
+	key_pin_init();
+	enter_AT_mode();
+
+	while (1)
+	{
+		//enter_AT_mode();
+		if (btn3_pressed)
+		{
+			lcd_write_instruction(lcd_Clear);
+			AT_mode_say("AT\r\n");
+			lcd_select = 3;
+			while(btn3_pressed);
+		}
+		if (btn2_pressed)
+		{
+			lcd_write_instruction(lcd_Clear);
+			AT_mode_say("AT+INQ\r\n");
+			lcd_select = 2;
+			while (btn2_pressed);
+		}
+		if (btn1_pressed)
+		{
+			lcd_write_instruction(lcd_Clear);
+			AT_mode_say("AT+INIT\r\n");
+			lcd_select = 1;
+			while (btn1_pressed);
+		}
+		
+		//USART_string_transmit(USART_string_recieve(recieve_string, '\0'));
+		
+		switch(lcd_select)
+		{
+			case 3:
+			{
+				lcd_xy(0,0);
+				lcd_Puts("AT-OK");
+				break;
+			}
+			case 2:
+			{
+				lcd_xy(0,0);
+				lcd_Puts("Inquiring");
+				break;
+			}
+			case 1:
+			{
+				lcd_xy(0,0);
+				lcd_Puts("PSS init");
+				break;
+			}
+			default:
+			{
+				lcd_xy(0,0);
+				lcd_Puts("Press a button");
+				break;
+			}
+		}
+	}
 	
 	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
 	

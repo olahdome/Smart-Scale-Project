@@ -20,7 +20,10 @@ void USART_init(uint16_t UBRR)
 	UCSR0B |= (1<<RXEN0)|(1<<TXEN0);
 	
 	/* Set frame format: 8data, 2stop bit */
-	UCSR0C |= (1<<USBS0)|(3<<UCSZ00);
+	//UCSR0C |= (1<<USBS0)|(3<<UCSZ00);
+	
+	/* Set frame format: 8data, 1stop bit */
+	UCSR0C |= (0<<USBS0)|(3<<UCSZ00);
 }
 
 void USART_data_transmit(unsigned char data)

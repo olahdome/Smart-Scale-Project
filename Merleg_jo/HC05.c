@@ -28,7 +28,7 @@ void hc_05_bluetooth_transmit_string(char *transmit_string)
 	USART_string_transmit(transmit_string);
 }
 
-char *hc_05_bluetooth_receive_string(char *receive_string, unsigned char terminating_character)
+char *hc_05_bluetooth_receive_string(char *receive_string, char terminating_character)
 {
 	unsigned char temp = 0;
 	uint8_t i = 0;
