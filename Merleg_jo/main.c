@@ -74,7 +74,7 @@ char string_ready[10];
 int main(void)
 {
 	//char recieve_string[50];
-	uint8_t lcd_select = 0;
+	//uint8_t lcd_select = 0;
 	
 	timer1_init();							//timer1 inicializálása
 	lcd_init();								//LCD inicializálása
@@ -87,8 +87,9 @@ int main(void)
 
 	key_pin_init();
 	enter_AT_mode();
+	bluetooth_menu();
 
-	while (1)
+	/*while (1)
 	{
 		//enter_AT_mode();
 		if (btn3_pressed)
@@ -142,7 +143,7 @@ int main(void)
 				break;
 			}
 		}
-	}
+	}*/
 	
 	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
 	
