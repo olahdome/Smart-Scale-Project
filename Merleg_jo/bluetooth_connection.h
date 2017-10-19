@@ -15,5 +15,7 @@
 extern void key_pin_init();
 extern void enter_AT_mode();
 extern void AT_mode_say(char *AT_command);
+extern void bluetooth_menu();
+extern void command_picker();
 
 #endif /* BLUETOOTH_CONNECTION_H_ */
