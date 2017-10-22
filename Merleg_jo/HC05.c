@@ -13,6 +13,8 @@
 #include "USART.h"
 #include "inttypes.h"
 
+#include "LCD.h"
+
 void hc_05_bluetooth_transmit_byte(char data_byte)
 {
 	USART_data_transmit(data_byte);
@@ -34,12 +36,27 @@ char *hc_05_bluetooth_receive_string(char *receive_string, char terminating_char
 	uint8_t i = 0;
 	while (1)
 	{
-		*(receive_string+i)=USART_data_recieve();
+		lcd_xy(0,0);
+		lcd_Puts("1");
 		
-		if(*(receive_string+i)==terminating_character) break;
-		else temp++;
+		*(receive_string+i)=USART_data_recieve();
+		lcd_Puts("2");
+		if(*(receive_string+i)==terminating_character)
+		{
+			lcd_Puts("3");
+			break;
+		}
+		else
+		{
+			lcd_Puts("itt");
+			temp++;
+		}
+		lcd_Puts("4");
 		i++;
+		lcd_Puts("5");
 	}
+	lcd_Puts("6");
 	*(receive_string+temp)='\0';
+	lcd_Puts("7");
 	return receive_string;
 }

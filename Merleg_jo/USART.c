@@ -11,6 +11,8 @@
 
 #include <avr/io.h>
 
+#include "LCD.h"
+
 void USART_init(uint16_t UBRR)
 {
 	UBRR0H = (unsigned char)(UBRR>>8);
@@ -37,9 +39,22 @@ void USART_data_transmit(unsigned char data)
 
 unsigned char USART_data_recieve(void)
 {
+	lcd_Puts("10");
 	/* Wait for data to be received */
-	while( !(UCSR0A & (1<<RXC0)) );
+	//while( !(UCSR0A & (1<<RXC0)) );
 	
+	while (1)
+	{
+		if (!(UCSR0A &(1<<RXC0)))
+		{
+			break;
+		}
+		else
+		{
+			return '\0';
+		}
+	}
+	lcd_Puts("11");
 	/* Get and return received data from buffer */
 	return UDR0;
 }

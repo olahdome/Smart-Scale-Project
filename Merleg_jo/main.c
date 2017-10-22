@@ -68,6 +68,8 @@ void menu1(Foods *);								//lista menü, kiválasztandó kajára mutató pointer
 void menu2(Foods *);								//részletes (detailed) menü
 void button(void);									//gombokat vizsgálja, hogy megnyomtuk e (részletes leírás a függvénynél)
 
+void recieve_mode(void);
+
 char string_rec[10];
 char string_ready[10];
 
@@ -87,7 +89,10 @@ int main(void)
 
 	key_pin_init();
 	enter_AT_mode();
-	bluetooth_menu();
+	
+	recieve_mode();
+	
+	//bluetooth_menu();
 
 	/*while (1)
 	{
@@ -331,4 +336,37 @@ void tombbe_tesz()							//az egyes példányosított struktúrákat 1 tömbbe tevése 
 	foods_tomb[7] = rizs;
 	foods_tomb[8] = spagetti;
 	foods_tomb[9] = tarhonya;
+}
+
+void recieve_mode()
+{
+	//char recieve[50];
+	char recieve_string_parameter[50];
+	
+	while (1)
+	{
+		//lcd_write_instruction(lcd_Clear);
+		hc_05_bluetooth_receive_string(recieve_string_parameter, '\0');
+		if (strlen(recieve_string_parameter) != 0)
+		{
+			lcd_write_instruction(lcd_Clear);
+			if (PINB & (1 << PORTB5))
+			{
+				key_port &= ~(1 << key_bit);
+			}
+			//hc_05_bluetooth_transmit_string(recieve_string_parameter);
+			//hc_05_bluetooth_transmit_string("\r\n");
+			lcd_xy(0,0);
+			lcd_Puts("siker");
+			lcd_Puts(recieve_string_parameter);
+		}
+		else
+		{
+			//hc_05_bluetooth_transmit_string("Nothing\r\n");
+			lcd_xy(0,1);
+			lcd_Puts("nothing");
+			//lcd_xy(0,1);
+			lcd_Puts(recieve_string_parameter);
+		}
+	}
 }
