@@ -4,7 +4,7 @@
  * Created: 2017.03.26. 18:13:01
  *  Author: Dome
  */ 
-
+/* <----------- ezt
 
 #ifndef USART_H_
 #define USART_H_

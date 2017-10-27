@@ -20,7 +20,8 @@
 #include "button.h"
 #include "LED.h"
 #include "ADHX.h"
-#include "USART.h"
+#include "USART_fifo.h"
+#include "Fifo.h"
 #include "HC05.h"
 #include "scale_functions.h"
 #include "LCD_string_functions.h"
@@ -73,24 +74,37 @@ void recieve_mode(void);
 char string_rec[10];
 char string_ready[10];
 
+uint8_t buffer_main[16] = {0};
+
 int main(void)
 {
 	//char recieve_string[50];
 	//uint8_t lcd_select = 0;
 	
-	timer1_init();							//timer1 inicializálása
+	//timer1_init();							//timer1 inicializálása
 	lcd_init();								//LCD inicializálása
 	button_init();							//gombok inicializálása (led-nek is)
 	LED_init();
 	ADC_init();								//ADC inicializálása
-	peldanyosit();							//kommentelve fent
-	tombbe_tesz();							//kommentelve fent
+	//peldanyosit();							//kommentelve fent
+	//tombbe_tesz();							//kommentelve fent
 	USART_init(MYUBRR);
-
+	sei();
+/*
 	key_pin_init();
 	enter_AT_mode();
+*/
+	USART_string_transmit("Megy!\r\n");
 	
-	recieve_mode();
+	while(1)
+	{
+		if (has_sentence())
+		{
+			USART_get_sentence(buffer_main);
+		}
+	}
+	
+	//recieve_mode();
 	
 	//bluetooth_menu();
 
@@ -149,6 +163,10 @@ int main(void)
 			}
 		}
 	}*/
+	
+	
+	/* <------- ezt
+	
 	
 	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
 	
@@ -338,15 +356,15 @@ void tombbe_tesz()							//az egyes példányosított struktúrákat 1 tömbbe tevése 
 	foods_tomb[9] = tarhonya;
 }
 
+/*
 void recieve_mode()
 {
 	//char recieve[50];
-	char recieve_string_parameter[50];
-	
+	//char recieve_string_parameter[50];
 	while (1)
 	{
 		//lcd_write_instruction(lcd_Clear);
-		hc_05_bluetooth_receive_string(recieve_string_parameter, '\0');
+		USART_data_receive()
 		if (strlen(recieve_string_parameter) != 0)
 		{
 			lcd_write_instruction(lcd_Clear);
@@ -368,5 +386,5 @@ void recieve_mode()
 			//lcd_xy(0,1);
 			lcd_Puts(recieve_string_parameter);
 		}
-	}
+	}*/
 }

@@ -4,7 +4,7 @@
  * Created: 2017.03.26. 20:41:08
  *  Author: Dome
  */ 
-
+/*
 
 #ifndef HC05_H_
 #define HC05_H_

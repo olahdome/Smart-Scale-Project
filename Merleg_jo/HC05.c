@@ -4,7 +4,7 @@
  * Created: 2017.03.26. 20:42:36
  *  Author: Dome
  */ 
-
+/*
 #ifndef F_CPU
 #define F_CPU (16000000UL)
 #endif
@@ -59,4 +59,4 @@ char *hc_05_bluetooth_receive_string(char *receive_string, char terminating_char
 	*(receive_string+temp)='\0';
 	lcd_Puts("7");
 	return receive_string;
-}
+}*/
