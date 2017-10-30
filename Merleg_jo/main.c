@@ -75,27 +75,21 @@ char string_rec[10];
 char string_ready[10];
 
 uint8_t buffer_main[16] = {0};
+	
+	
+char string_tomb[16];
 
 int main(void)
 {
-	//char recieve_string[50];
-	//uint8_t lcd_select = 0;
-	
-	//timer1_init();							//timer1 inicializálása
+	timer1_init();							//timer1 inicializálása
 	lcd_init();								//LCD inicializálása
 	button_init();							//gombok inicializálása (led-nek is)
 	LED_init();
 	ADC_init();								//ADC inicializálása
-	//peldanyosit();							//kommentelve fent
-	//tombbe_tesz();							//kommentelve fent
+	peldanyosit();							//kommentelve fent
+	tombbe_tesz();							//kommentelve fent
 	USART_init(MYUBRR);
-	sei();
-/*
-	key_pin_init();
-	enter_AT_mode();
-*/
-	USART_string_transmit("Megy!\r\n");
-	
+/*	
 	while(1)
 	{
 		if (has_sentence())
@@ -103,72 +97,10 @@ int main(void)
 			USART_get_sentence(buffer_main);
 		}
 	}
+*/	
+//	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
 	
-	//recieve_mode();
-	
-	//bluetooth_menu();
-
-	/*while (1)
-	{
-		//enter_AT_mode();
-		if (btn3_pressed)
-		{
-			lcd_write_instruction(lcd_Clear);
-			AT_mode_say("AT\r\n");
-			lcd_select = 3;
-			while(btn3_pressed);
-		}
-		if (btn2_pressed)
-		{
-			lcd_write_instruction(lcd_Clear);
-			AT_mode_say("AT+INQ\r\n");
-			lcd_select = 2;
-			while (btn2_pressed);
-		}
-		if (btn1_pressed)
-		{
-			lcd_write_instruction(lcd_Clear);
-			AT_mode_say("AT+INIT\r\n");
-			lcd_select = 1;
-			while (btn1_pressed);
-		}
-		
-		//USART_string_transmit(USART_string_recieve(recieve_string, '\0'));
-		
-		switch(lcd_select)
-		{
-			case 3:
-			{
-				lcd_xy(0,0);
-				lcd_Puts("AT-OK");
-				break;
-			}
-			case 2:
-			{
-				lcd_xy(0,0);
-				lcd_Puts("Inquiring");
-				break;
-			}
-			case 1:
-			{
-				lcd_xy(0,0);
-				lcd_Puts("PSS init");
-				break;
-			}
-			default:
-			{
-				lcd_xy(0,0);
-				lcd_Puts("Press a button");
-				break;
-			}
-		}
-	}*/
-	
-	
-	/* <------- ezt
-	
-	
-	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
+	//offset = calibr;
 	
 	while(1)
     {
@@ -182,8 +114,8 @@ ISR(TIMER1_COMPA_vect)
 	tick_timer1++;
 	if (menu_select_flag)								//ha megnyomtuk a 3. gombot, csak akkor hajtja végre
 	{
-		if (data_grams > 0)								//ha nagyobb a kiolvasott, kalibrált, gramm-ban értendõ érték, mint 0, csak akkor írja ki
-		{
+		//if (data_grams > 0)								//ha nagyobb a kiolvasott, kalibrált, gramm-ban értendõ érték, mint 0, csak akkor írja ki
+		//{
 			lcd_xy(0,0);								//kiírja a grammos értéket, a SZH értéket
 			lcd_Puts("Grams: ");
 			lcd_xy(7,0);
@@ -195,11 +127,13 @@ ISR(TIMER1_COMPA_vect)
 			lcd_Puts(data_SZH_tomb);
 			lcd_Puts(" g");								//eddig
 
-			hc_05_bluetooth_transmit_string(data_grams_tomb);
-			hc_05_bluetooth_transmit_string("OK");
+			USART_string_transmit(data_grams_tomb);
+			
+			//hc_05_bluetooth_transmit_string(data_grams_tomb);
+			//hc_05_bluetooth_transmit_string("OK");
 			tick_timer1 = 0;
-		}
-		else
+		//}
+		/*else
 		{
 			lcd_xy(0,0);								//ha negatív, akkor 0.00-t ír ki
 			lcd_Puts("Grams: ");
@@ -211,7 +145,7 @@ ISR(TIMER1_COMPA_vect)
 			lcd_xy(7,1);
 			lcd_Puts("0.00");
 			lcd_Puts(" g");								//eddig
-		}
+		}*/
 	}
 }
 
@@ -244,10 +178,14 @@ void menu2(Foods *t)
 {
 	old_data_raw = data_raw;								//******, eltárolja az elõzõ értéket
 	data_raw = get_units(10);								//beolvassa a raw értéket
-	data_grams = data_raw-calibr;							//levonja az elején beolvasott calibr-t, gram az eredmény
-	data_SZH = (data_grams * (t[tomb_poz].SZH_hund))/100;	//létrehozza a szénhidrát értéket, összeszorozza a gramot a 100 g-ban lévõ meghatározott szénhidrátokkal, majd elosztja 100-al
-	ftoa(data_grams,data_grams_tomb,2);						//átalakítja stringgé a grammokat, LCD-nek
+	//data_grams = data_raw-calibr;							//levonja az elején beolvasott calibr-t, gram az eredmény
+	//data_SZH = (data_grams * (t[tomb_poz].SZH_hund))/100;	//létrehozza a szénhidrát értéket, összeszorozza a gramot a 100 g-ban lévõ meghatározott szénhidrátokkal, majd elosztja 100-al
+	//ftoa(data_grams,data_grams_tomb,2);						//átalakítja stringgé a grammokat, LCD-nek
+
+	data_SZH = (data_raw * (t[tomb_poz].SZH_hund))/100;
+	ftoa(data_raw,data_grams_tomb,2);	
 	ftoa(data_SZH,data_SZH_tomb,2);							//átalakítja stringgé a szénhidrátot, LCD-nek
+	/*
 	if (data_raw < old_data_raw)							//****** összehasonlítja a régi beolvasott értéket, az újjal, különben összezavarodna a kiíratás, ha nagyobbról kicsire vált
 	{
 		lcd_xy(7,0);										//törli az értékeket (csak)
@@ -261,9 +199,8 @@ void menu2(Foods *t)
 		lcd_Puts(data_SZH_tomb);
 		lcd_Puts(" g");
 	}
+	*/
 }
-
-
 
 void button()
 {
@@ -354,37 +291,4 @@ void tombbe_tesz()							//az egyes példányosított struktúrákat 1 tömbbe tevése 
 	foods_tomb[7] = rizs;
 	foods_tomb[8] = spagetti;
 	foods_tomb[9] = tarhonya;
-}
-
-/*
-void recieve_mode()
-{
-	//char recieve[50];
-	//char recieve_string_parameter[50];
-	while (1)
-	{
-		//lcd_write_instruction(lcd_Clear);
-		USART_data_receive()
-		if (strlen(recieve_string_parameter) != 0)
-		{
-			lcd_write_instruction(lcd_Clear);
-			if (PINB & (1 << PORTB5))
-			{
-				key_port &= ~(1 << key_bit);
-			}
-			//hc_05_bluetooth_transmit_string(recieve_string_parameter);
-			//hc_05_bluetooth_transmit_string("\r\n");
-			lcd_xy(0,0);
-			lcd_Puts("siker");
-			lcd_Puts(recieve_string_parameter);
-		}
-		else
-		{
-			//hc_05_bluetooth_transmit_string("Nothing\r\n");
-			lcd_xy(0,1);
-			lcd_Puts("nothing");
-			//lcd_xy(0,1);
-			lcd_Puts(recieve_string_parameter);
-		}
-	}*/
 }

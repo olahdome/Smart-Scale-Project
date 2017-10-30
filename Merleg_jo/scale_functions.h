@@ -10,14 +10,14 @@
 #define SCALE_FUNCTIONS_H_
 
 extern uint32_t calibr;								//kalibráció beállítása, elején beolvas, ezzel kappunk grammokat
-extern uint32_t offset;
+extern double offset;
 extern float scale;
 
 extern uint32_t read_average(uint8_t);						//beolvas annyiszor, amennyi számot adunk paraméternek, kiszámolja az átlagát
 extern double get_value(uint8_t times);					//az átlagból levonja az offsetet
 extern float get_units(uint8_t times);						//get_value-t (átlagból levont offsetet) még elosztja a scale értékkel (kalibráló érték)
 extern void tare(uint8_t);									//táráz
-extern void set_offset(long new_offset);
-extern void set_scale(long new_scale);
+extern void set_offset(double new_offset);
+extern void set_scale(float new_scale);
 
 #endif /* SCALE_FUNCTIONS_H_ */

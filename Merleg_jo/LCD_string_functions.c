@@ -11,30 +11,64 @@
 
 #include <string.h>
 #include <math.h>
+#include "inttypes.h"
 #include "LCD_string_functions.h"
 
 void ftoa(float n, char *res, int afterpoint)
 {
+	uint8_t negative_flag = 0;
+	
+	if (n < 0)
+	{
+		n *= (-1);
+		res[0] = '-';
+		negative_flag = 1;
+	}
+	
 	// Extract integer part
 	int ipart = (int)n;
 
 	// Extract floating part
 	float fpart = n - (float)ipart;
+	
+	int i;
 
 	// convert integer part to string
-	int i = intToStr(ipart, res, 1);
-
+	if (negative_flag == 0)
+	{
+		i = intToStr(ipart, res, 1);
+	}
+	else
+	{
+		i = intToStr(ipart, res + 1, 1);
+	}
 	// check for display option after point
 	if (afterpoint != 0)
 	{
-		res[i] = '.';  // add dot
+		if (negative_flag == 0)
+		{
+			res[i] = '.';  // add dot
+		}
+		else
+		{
+			res[i+1] = '.';  // add dot
+		}
 
 		// Get the value of fraction part upto given no.
 		// of points after dot. The third parameter is needed
 		// to handle cases like 233.007
 		fpart = fpart * pow(10, afterpoint);
 
-		intToStr((int)fpart, res + i + 1, afterpoint);
+		if (negative_flag == 0)
+		{
+			intToStr((int)fpart, res + i + 1, afterpoint);
+		}
+		else
+		{
+			intToStr((int)fpart, res + i + 2, afterpoint);
+		}
+		
+
 	}
 }
 int intToStr(int x, char str[], int d)

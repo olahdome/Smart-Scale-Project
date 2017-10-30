@@ -4,7 +4,7 @@
  * Created: 2017.10.17. 21:11:39
  *  Author: Dome
  */
-
+/* <---------------- ezt
 #ifndef BLUETOOTH_CONNECTION_H_
 #define BLUETOOTH_CONNECTION_H_
 

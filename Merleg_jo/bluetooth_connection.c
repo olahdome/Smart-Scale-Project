@@ -4,7 +4,7 @@
  * Created: 2017.10.17. 21:11:24
  *  Author: Dome
  */
-
+/* <------------ ezt
 #include <avr/io.h>
 #include <inttypes.h>
 #include "bluetooth_connection.h"
@@ -86,4 +86,4 @@ void command_picker()
 		lcd_write_instruction(lcd_Clear);
 		while(btn2_pressed);
 	}
-}
+}*/
