@@ -9,6 +9,8 @@
 #include "Fifo.h"
 #include <avr/interrupt.h>
 
+#include "LCD.h"
+
 static FIFO receive, transmit;
 static uint8_t receive_buffer[receive_buffer_size], transmit_buffer[transmit_buffer_size];
 volatile uint8_t sentence = 0;
@@ -55,13 +57,17 @@ unsigned char USART_data_receive(void)
 
 uint8_t has_sentence()
 {
+	lcd_xy(0,1);
+	lcd_Puts("1");
 	return sentence;
 }
 
-uint8_t USART_get_sentence(uint8_t *buffer)
+uint8_t USART_get_sentence(char *buffer)
 {
 	uint8_t tmp,i = 0;
 	while((tmp = USART_data_receive()) != 12){ // 12 == '\n'
+		lcd_xy(2,1);
+		lcd_Puts("2");
 		buffer[i] = tmp;
 		i++;
 	}

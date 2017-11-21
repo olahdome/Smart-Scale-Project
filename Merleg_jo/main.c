@@ -28,7 +28,7 @@
 #include "bluetooth_connection.h"
 
 #define tomb_length	10
-#define BAUD 38400
+#define BAUD 9600	//38400
 #define MYUBRR F_CPU/16/BAUD-1
 
 typedef struct Foods{
@@ -55,6 +55,10 @@ uint8_t tomb_poz = 0;								//aktuális lista elem indexe
 uint8_t tomb_poz_old = 0;							//eltárolásra, összehasonlításra szolgál
 uint8_t menu_select_flag = 0;						//0 -> lista, 1 -> detailed
 
+uint8_t communication_flag = 0;
+
+
+
 float data_raw = 0;									//kiolvasott, formázatlan, nyers érték
 float data_grams = 0;								//kiolvasott érték grammban
 float data_SZH = 0;									//kiolvasott érték szénhidrátban
@@ -74,8 +78,8 @@ void recieve_mode(void);
 char string_rec[10];
 char string_ready[10];
 
-uint8_t buffer_main[16] = {0};
-	
+char buffer_main1[16] = {0};
+char buffer_main2[16] = {0};
 	
 char string_tomb[16];
 
@@ -89,6 +93,8 @@ int main(void)
 	peldanyosit();							//kommentelve fent
 	tombbe_tesz();							//kommentelve fent
 	USART_init(MYUBRR);
+	key_pin_init_pin_low();
+	
 /*	
 	while(1)
 	{
@@ -105,7 +111,7 @@ int main(void)
 	while(1)
     {
 		button();
-		!menu_select_flag ? menu1(foods_tomb) : menu2(foods_tomb);
+		!menu_select_flag ? menu1(foods_tomb) : menu2(foods_tomb);	
 	}
 }
 
@@ -126,11 +132,49 @@ ISR(TIMER1_COMPA_vect)
 			lcd_xy(7,1);
 			lcd_Puts(data_SZH_tomb);
 			lcd_Puts(" g");								//eddig
-
-			USART_string_transmit(data_grams_tomb);
 			
-			//hc_05_bluetooth_transmit_string(data_grams_tomb);
-			//hc_05_bluetooth_transmit_string("OK");
+			if (communication_flag == 0)				//???????????????????????????????????????
+			{
+				USART_string_transmit("START");
+				communication_flag = 2;
+			}
+			if (communication_flag == 2)
+			{
+				if (has_sentence())
+				{
+					USART_get_sentence(buffer_main1);
+					if (!strcmp(buffer_main1,"READY\n"));
+					{
+						communication_flag = 1;
+					}
+				}
+			}
+			
+			/*if (has_sentence())
+			{
+				USART_get_sentence(buffer_main2);
+				if (!strcmp(buffer_main2,"START\n"))
+				{
+					USART_string_transmit("READY");
+					communication_flag = 1;
+				}
+				lcd_xy(12,1);
+				lcd_Puts(buffer_main2);
+			}*/
+		
+			if ((has_sentence()) && (communication_flag == 1))
+			{
+				/*
+				USART_get_sentence(buffer_main1);
+				if (!strcmp(buffer_main1,"OK"))
+				{
+					USART_string_transmit(data_grams_tomb);
+					USART_string_transmit("OK");
+					buffer_main1[0] = '\0';
+				}*/
+				lcd_Puts("AAAAAAAA");
+			}																				//?????????????????????
+			
 			tick_timer1 = 0;
 		//}
 		/*else
@@ -147,6 +191,8 @@ ISR(TIMER1_COMPA_vect)
 			lcd_Puts(" g");								//eddig
 		}*/
 	}
+	
+	
 }
 
 void timer1_init()

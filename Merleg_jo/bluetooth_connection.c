@@ -4,13 +4,15 @@
  * Created: 2017.10.17. 21:11:24
  *  Author: Dome
  */
-/* <------------ ezt
+
 #include <avr/io.h>
 #include <inttypes.h>
 #include "bluetooth_connection.h"
 #include "HC05.h"
 #include "LCD.h"
 #include "button.h"
+
+/* <------------ ezt
 
 #define bluetooth_array_row		3
 #define bluetooth_array_column	17
@@ -21,12 +23,15 @@ char bluetooth_options[bluetooth_array_row][bluetooth_array_column]	=	{
 																			"AT+INIT",
 																			"AT+INQ"
 																		};
+*/
 
-void key_pin_init()
+void key_pin_init_pin_low()
 {
 	key_ddr |= (1 << key_bit);
 	key_port &= ~(1 << key_bit);
 }
+
+/*
 
 void enter_AT_mode()
 {

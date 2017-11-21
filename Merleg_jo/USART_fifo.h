@@ -19,6 +19,6 @@ void USART_data_transmit(unsigned char data);
 void USART_string_transmit(char *string);
 unsigned char USART_data_receive(void);
 uint8_t has_sentence(void);
-uint8_t USART_get_sentence(uint8_t *buffer);
+uint8_t USART_get_sentence(char *buffer);
 
 #endif /* USART_FIFO_H_ */
