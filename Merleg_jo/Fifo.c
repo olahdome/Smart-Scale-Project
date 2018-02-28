@@ -37,6 +37,8 @@ uint8_t fifo_put_in_data(FIFO* fifo, uint8_t data)
 	(fifo->data[fifo->fifo_write_pointer]) = data;
 	
 	fifo->fifo_write_pointer++;
+	fifo->fifo_write_pointer %= fifo->fifo_size;
+	
 	fifo->fifo_elements++;
 	
 	return 1;

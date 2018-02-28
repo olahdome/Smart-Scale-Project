@@ -28,7 +28,7 @@
 #include "bluetooth_connection.h"
 
 #define tomb_length	10
-#define BAUD 9600	//38400
+#define BAUD 38400
 #define MYUBRR F_CPU/16/BAUD-1
 
 typedef struct Foods{
@@ -95,15 +95,19 @@ int main(void)
 	USART_init(MYUBRR);
 	key_pin_init_pin_low();
 	
-/*	
-	while(1)
+	
+	uint8_t tmp;
+	
+	while(1)									//KIRÁLY! billentyûrõl olvasó usart
 	{
-		if (has_sentence())
+		if (tmp = (USART_data_receive()))
 		{
-			USART_get_sentence(buffer_main);
+			
+			lcd_write_character(tmp);
+			USART_data_transmit(tmp);
 		}
 	}
-*/	
+	
 //	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
 	
 	//offset = calibr;
@@ -133,6 +137,8 @@ ISR(TIMER1_COMPA_vect)
 			lcd_Puts(data_SZH_tomb);
 			lcd_Puts(" g");								//eddig
 			
+			
+			/*
 			if (communication_flag == 0)				//???????????????????????????????????????
 			{
 				USART_string_transmit("START");
@@ -161,23 +167,23 @@ ISR(TIMER1_COMPA_vect)
 				lcd_xy(12,1);
 				lcd_Puts(buffer_main2);
 			}*/
-		
+		/*
 			if ((has_sentence()) && (communication_flag == 1))
 			{
-				/*
+				
 				USART_get_sentence(buffer_main1);
 				if (!strcmp(buffer_main1,"OK"))
 				{
 					USART_string_transmit(data_grams_tomb);
 					USART_string_transmit("OK");
 					buffer_main1[0] = '\0';
-				}*/
+				}
 				lcd_Puts("AAAAAAAA");
 			}																				//?????????????????????
 			
 			tick_timer1 = 0;
 		//}
-		/*else
+		else
 		{
 			lcd_xy(0,0);								//ha negatív, akkor 0.00-t ír ki
 			lcd_Puts("Grams: ");
@@ -191,8 +197,6 @@ ISR(TIMER1_COMPA_vect)
 			lcd_Puts(" g");								//eddig
 		}*/
 	}
-	
-	
 }
 
 void timer1_init()

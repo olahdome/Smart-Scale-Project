@@ -54,11 +54,12 @@ unsigned char USART_data_receive(void)
 	return fifo_get_out_data(&receive);
 }
 
+// char * USART_string_receive();	under construction
+
 
 uint8_t has_sentence()
 {
 	lcd_xy(0,1);
-	lcd_Puts("1");
 	return sentence;
 }
 
@@ -78,15 +79,18 @@ uint8_t USART_get_sentence(char *buffer)
 
 ISR(USART_RX_vect)
 {
-	uint8_t tmp = UDR0;
+	/*uint8_t tmp = UDR0;
 	if(tmp == 12) sentence++;
 	fifo_put_in_data(&receive, tmp);
-	UDR0 = tmp;
+	UDR0 = tmp;*/
+	
+	fifo_put_in_data(&receive,UDR0);
+	
 }
 
 ISR(USART_UDRE_vect)
 {
-	if (!transmit.fifo_elements)
+	if (!transmit.fifo_elements)	// tilt
 	{
 		UCSR0B &= ~(1 << UDRIE0);
 	}

@@ -9,13 +9,13 @@
 
 extern void lcd_init(void)
 {
-	lcd_D7_ddr |= (1<<lcd_D7_bit);                  // 4 data lines - output
-	lcd_D6_ddr |= (1<<lcd_D6_bit);
-	lcd_D5_ddr |= (1<<lcd_D5_bit);
-	lcd_D4_ddr |= (1<<lcd_D4_bit);
+	lcd_D7_ddr |= (1<<lcd_D7_bit);                  // 4 data lines - output		// pin 7
+	lcd_D6_ddr |= (1<<lcd_D6_bit);													// pin 6
+	lcd_D5_ddr |= (1<<lcd_D5_bit);													// pin 5
+	lcd_D4_ddr |= (1<<lcd_D4_bit);													// pin 4
 	
-	lcd_E_ddr |= (1<<lcd_E_bit);                    // E line - output
-	lcd_RS_ddr |= (1<<lcd_RS_bit);                  // RS line - output
+	lcd_E_ddr |= (1<<lcd_E_bit);                    // E line - output				// pin 9
+	lcd_RS_ddr |= (1<<lcd_RS_bit);                  // RS line - output				// pin 8
 
 	// Power-up delay
 	_delay_ms(100);                                 // initial 40 mSec delay
