@@ -49,7 +49,13 @@ void USART_string_transmit(char *string)
 	}
 }
 
+/*
 unsigned char USART_data_receive(void)
+{
+	return fifo_get_out_data(&receive);
+}*/
+
+uint8_t USART_data_receive(void)
 {
 	return fifo_get_out_data(&receive);
 }

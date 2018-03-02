@@ -28,7 +28,7 @@
 #include "bluetooth_connection.h"
 
 #define tomb_length	10
-#define BAUD 38400
+#define BAUD 9600 //38400     <------- 9600 a jó!!!
 #define MYUBRR F_CPU/16/BAUD-1
 
 typedef struct Foods{
@@ -101,22 +101,21 @@ int main(void)
 	while(1)									//KIRÁLY! billentyûrõl olvasó usart
 	{
 		if (tmp = (USART_data_receive()))
-		{
-			
+		{	
 			lcd_write_character(tmp);
-			USART_data_transmit(tmp);
+			USART_data_transmit((char)tmp);
 		}
 	}
 	
 //	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
 	
 	//offset = calibr;
-	
+	/*
 	while(1)
     {
 		button();
 		!menu_select_flag ? menu1(foods_tomb) : menu2(foods_tomb);	
-	}
+	}*/
 }
 
 ISR(TIMER1_COMPA_vect)
