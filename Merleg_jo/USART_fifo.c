@@ -55,42 +55,51 @@ unsigned char USART_data_receive(void)
 	return fifo_get_out_data(&receive);
 }*/
 
-uint8_t USART_data_receive(void)
+uint8_t USART_data_receive(void)					//ez a bibi!!! átnézni!
 {
 	return fifo_get_out_data(&receive);
 }
 
-// char * USART_string_receive();	under construction
-
+uint8_t USART_string_receive(char *buffer)
+{
+	uint8_t tmp, counter = 0;
+	while(tmp = (char)USART_data_receive())
+	{
+		buffer[counter] = tmp;
+		counter++;
+	}
+	buffer[counter] = 0;
+	sentence--;
+	return counter;
+}
 
 uint8_t has_sentence()
 {
-	lcd_xy(0,1);
+	//lcd_xy(0,1);
 	return sentence;
 }
-
+/*
 uint8_t USART_get_sentence(char *buffer)
 {
-	uint8_t tmp,i = 0;
+	uint8_t tmp, counter = 0;
 	while((tmp = USART_data_receive()) != 12){ // 12 == '\n'
-		lcd_xy(2,1);
-		lcd_Puts("2");
-		buffer[i] = tmp;
-		i++;
+		buffer[counter] = tmp;
+		counter++;
 	}
-	buffer[i] = 0;
+	buffer[counter] = 0;
 	sentence--;
-	return i;
-}
+	return counter;
+}*/
 
 ISR(USART_RX_vect)
 {
-	/*uint8_t tmp = UDR0;
-	if(tmp == 12) sentence++;
+	uint8_t tmp = UDR0;
+	//if(tmp == 12) 
+	sentence++;
 	fifo_put_in_data(&receive, tmp);
-	UDR0 = tmp;*/
+	UDR0 = tmp;
 	
-	fifo_put_in_data(&receive,UDR0);
+	//fifo_put_in_data(&receive,UDR0);
 	
 }
 

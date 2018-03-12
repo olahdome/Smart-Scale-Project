@@ -83,6 +83,8 @@ char buffer_main2[16] = {0};
 	
 char string_tomb[16];
 
+char receive_string[100];
+
 int main(void)
 {
 	timer1_init();							//timer1 inicializálása
@@ -97,14 +99,33 @@ int main(void)
 	
 	
 	uint8_t tmp;
+	uint8_t index = 0;
 	
 	while(1)									//KIRÁLY! billentyûrõl olvasó usart
 	{
-		if (tmp = (USART_data_receive()))
+		USART_string_transmit("JO");
+		
+		/*if (USART_data_receive())
 		{	
-			lcd_write_character(tmp);
-			USART_data_transmit((char)tmp);
-		}
+			USART_string_receive(receive_string);
+			//lcd_write_character(tmp);
+			lcd_Puts(receive_string);
+			//USART_string_transmit(receive_string);
+			if (!(strcmp(receive_string, "OK")))
+			{
+				USART_string_transmit("JO");
+			}
+			//USART_data_transmit((char)tmp);
+		}*/
+		/*if (has_sentence())
+		{
+			USART_string_receive(receive_string);
+			lcd_Puts(receive_string);
+			if (!(strcmp(receive_string, "OK")))
+			{
+				USART_string_transmit("JO");
+			}
+		}*/
 	}
 	
 //	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
