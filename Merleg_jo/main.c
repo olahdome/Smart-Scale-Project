@@ -87,7 +87,7 @@ char receive_string[100];
 
 int main(void)
 {
-	timer1_init();							//timer1 inicializálása
+	timer1_init();							//timer1 inicializálás
 	lcd_init();								//LCD inicializálása
 	button_init();							//gombok inicializálása (led-nek is)
 	LED_init();
@@ -103,7 +103,8 @@ int main(void)
 	
 	while(1)									//KIRÁLY! billentyûrõl olvasó usart
 	{
-		USART_string_transmit("JO");
+		//USART_string_transmit("JO ");
+		//lcd_Puts("JO");
 		
 		/*if (USART_data_receive())
 		{	
@@ -117,14 +118,17 @@ int main(void)
 			}
 			//USART_data_transmit((char)tmp);
 		}*/
-		/*if (has_sentence())
+		/*
+		if (has_sentence())
 		{
 			USART_string_receive(receive_string);
-			lcd_Puts(receive_string);
-			if (!(strcmp(receive_string, "OK")))
+			if (!(strcmp(receive_string, "READY")))
 			{
+				lcd_Puts("kuld");
 				USART_string_transmit("JO");
 			}
+			lcd_Puts(receive_string);
+			receive_string[0] = '\0';
 		}*/
 	}
 	
@@ -142,7 +146,25 @@ int main(void)
 ISR(TIMER1_COMPA_vect)
 {
 	tick_timer1++;
-	if (menu_select_flag)								//ha megnyomtuk a 3. gombot, csak akkor hajtja végre
+	if (tick_timer1 == 10)
+	{
+		if (has_sentence())
+		{
+			USART_string_receive(receive_string);
+			if (!(strcmp(receive_string, "READY")))
+			{
+				lcd_Puts("kuld");
+				USART_string_transmit("JO");
+			}
+			lcd_Puts(receive_string);
+			receive_string[0] = '\0';
+		}
+		tick_timer1 = 0;
+	}
+	
+	
+	
+	/*if (menu_select_flag)								//ha megnyomtuk a 3. gombot, csak akkor hajtja végre
 	{
 		//if (data_grams > 0)								//ha nagyobb a kiolvasott, kalibrált, gramm-ban értendõ érték, mint 0, csak akkor írja ki
 		//{
@@ -215,8 +237,8 @@ ISR(TIMER1_COMPA_vect)
 			lcd_xy(7,1);
 			lcd_Puts("0.00");
 			lcd_Puts(" g");								//eddig
-		}*/
-	}
+		}
+	}*/
 }
 
 void timer1_init()

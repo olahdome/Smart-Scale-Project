@@ -36,12 +36,18 @@ void USART_init(uint16_t UBRR)
 
 void USART_data_transmit(unsigned char data)
 {
+	//UBRR0H = (unsigned char)(38400>>8);		// set correct BAUD for transmit = 38400
+	//UBRR0L = (unsigned char)38400;
+	
 	fifo_put_in_data(&transmit, data);
 	UCSR0B |= (1<<UDRIE0);
 }
 
 void USART_string_transmit(char *string)
 {
+	//UBRR0H = (unsigned char)(38400>>8);		// set correct BAUD for transmit = 38400
+	//UBRR0L = (unsigned char)38400;
+	
 	while (*string)
 	{
 		USART_data_transmit(*string);
@@ -55,21 +61,28 @@ unsigned char USART_data_receive(void)
 	return fifo_get_out_data(&receive);
 }*/
 
-uint8_t USART_data_receive(void)					//ez a bibi!!! átnézni!
+unsigned char USART_data_receive(void)					//ez a bibi!!! átnézni!
 {
-	return fifo_get_out_data(&receive);
+	//UBRR0H = (unsigned char)(9600>>8);			// set correct BAUD for receive = 9600
+	//UBRR0L = (unsigned char)9600;
+	
+	uint8_t tmp;
+	if (tmp = fifo_get_out_data(&receive)) return tmp;
+	else return 0;
 }
 
 uint8_t USART_string_receive(char *buffer)
 {
+	//UBRR0H = (unsigned char)(9600>>8);		// set correct BAUD for receive = 9600
+	//UBRR0L = (unsigned char)9600;
 	uint8_t tmp, counter = 0;
-	while(tmp = (char)USART_data_receive())
+	while(tmp = USART_data_receive())
 	{
 		buffer[counter] = tmp;
 		counter++;
 	}
 	buffer[counter] = 0;
-	sentence--;
+	sentence = 0;
 	return counter;
 }
 
@@ -95,7 +108,7 @@ ISR(USART_RX_vect)
 {
 	uint8_t tmp = UDR0;
 	//if(tmp == 12) 
-	sentence++;
+	sentence = 1;
 	fifo_put_in_data(&receive, tmp);
 	UDR0 = tmp;
 	
