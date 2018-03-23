@@ -146,21 +146,44 @@ int main(void)
 ISR(TIMER1_COMPA_vect)
 {
 	tick_timer1++;
+	unsigned char element = 254;
+	
 	if (tick_timer1 == 10)
 	{
 		if (has_sentence())
 		{
 			USART_string_receive(receive_string);
-			if (!(strcmp(receive_string, "READY")))
+			
+			if(!(strcmp(receive_string, "APP_READY")))		{element = 0;}
+			if(!(strcmp(receive_string, "SEND_DATA")))		{element = 1;}
+			
+			switch (element)
 			{
-				lcd_Puts("kuld");
-				USART_string_transmit("JO");
+				case 0:
+				{
+					USART_string_transmit("PROC_READY");
+					break;
+				}
+				case 1:
+				{
+					old_data_raw = data_raw;								//******, eltárolja az elõzõ értéket
+					data_raw = get_units(10);
+					ftoa(data_raw,data_grams_tomb,2);
+					USART_string_transmit(data_grams_tomb);
+					USART_string_transmit("DATA");
+					break;
+				}
+				default:
+				{
+					break;
+				}
 			}
-			lcd_Puts(receive_string);
 			receive_string[0] = '\0';
 		}
 		tick_timer1 = 0;
 	}
+	
+	
 	
 	
 	
