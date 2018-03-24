@@ -178,6 +178,7 @@ ISR(TIMER1_COMPA_vect)
 					break;
 				}
 			}
+			lcd_Puts(receive_string);
 			receive_string[0] = '\0';
 		}
 		tick_timer1 = 0;
