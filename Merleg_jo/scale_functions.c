@@ -22,8 +22,8 @@
 #include "ADHX.h"
 
 //uint32_t calibr = 0;
-double offset = 21446.4;		//8593500 ??
-float scale = 401;			//401.3; <--- jó érték
+double offset = 0;		//8593500 ??
+float scale = 402.97;	//401.3; <--- jó érték
 
 extern uint32_t read_average(uint8_t times)
 {
@@ -50,18 +50,18 @@ extern float get_units(uint8_t times)
 */
 extern double get_value(uint8_t times)
 {
-	return read_average(times) / scale;
+	return read_average(times) - offset;
 }
 
 extern float get_units(uint8_t times)
 {
-	return get_value(times) - offset;
+	return get_value(times) / scale;
 }
 
 extern void tare(uint8_t times)
 {
-	double sum = get_units(times);
-	//calibr = sum;
+	double sum = read_average(times);
+	set_offset(sum);
 }
 
 extern void set_offset(double new_offset)

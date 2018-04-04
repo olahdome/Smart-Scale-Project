@@ -57,13 +57,13 @@ uint8_t menu_select_flag = 0;						//0 -> lista, 1 -> detailed
 
 uint8_t communication_flag = 0;
 
-
-
 float data_raw = 0;									//kiolvasott, formázatlan, nyers érték
 float data_grams = 0;								//kiolvasott érték grammban
 float data_SZH = 0;									//kiolvasott érték szénhidrátban
 float old_data_raw = 0;								//összehasonlításhoz használt változó (lsd. lejjebb)
 char data_grams_tomb[16];							//ftoa miatt tömb, grammoknak
+uint8_t data_grams_length;
+uint8_t old_data_grams_length;
 char data_SZH_tomb[16];								//ftoa miatt tömb,SZH-nak
 
 void timer1_init(void);								//0.1 sec-es timer
@@ -96,6 +96,7 @@ int main(void)
 	tombbe_tesz();							//kommentelve fent
 	USART_init(MYUBRR);
 	//key_pin_init_pin_low();
+	tare(10);
 	
 	
 	uint8_t tmp;
@@ -103,33 +104,7 @@ int main(void)
 	
 	while(1)									//KIRÁLY! billentyûrõl olvasó usart
 	{
-		//USART_string_transmit("JO ");
-		//lcd_Puts("JO");
-		
-		/*if (USART_data_receive())
-		{	
-			USART_string_receive(receive_string);
-			//lcd_write_character(tmp);
-			lcd_Puts(receive_string);
-			//USART_string_transmit(receive_string);
-			if (!(strcmp(receive_string, "OK")))
-			{
-				USART_string_transmit("JO");
-			}
-			//USART_data_transmit((char)tmp);
-		}*/
-		/*
-		if (has_sentence())
-		{
-			USART_string_receive(receive_string);
-			if (!(strcmp(receive_string, "READY")))
-			{
-				lcd_Puts("kuld");
-				USART_string_transmit("JO");
-			}
-			lcd_Puts(receive_string);
-			receive_string[0] = '\0';
-		}*/
+		button();
 	}
 	
 //	calibr = get_units(50);					//vesz egy értéket, amit majd késõbb kivon a "raw" (nem kalibrált) értékbõl
@@ -147,16 +122,23 @@ ISR(TIMER1_COMPA_vect)
 {
 	tick_timer1++;
 	unsigned char element = 254;
-	
+
 	if (tick_timer1 == 10)
 	{
+		old_data_grams_length = data_grams_length;
 		old_data_raw = data_raw;								//******, eltárolja az elõzõ értéket
-		data_raw = get_units(10);
+		data_raw = get_units(2);
 		ftoa(data_raw,data_grams_tomb,2);
+		data_grams_length = strlen(data_grams_tomb);
+		if (old_data_grams_length > data_grams_length)
+		{
+			lcd_write_instruction(lcd_Clear);
+		}
 		lcd_xy(0,0);
 		lcd_Puts("Grams: ");
 		lcd_xy(7,0);
 		lcd_Puts(data_grams_tomb);
+		//lcd_xy(14,0);
 		lcd_Puts(" g");
 		if (has_sentence())
 		{
@@ -184,6 +166,15 @@ ISR(TIMER1_COMPA_vect)
 			receive_string[0] = '\0';
 		}
 		tick_timer1 = 0;
+	}
+}
+
+void button()
+{
+	if (btn1_pressed)
+	{
+		tare(5);
+		while (btn1_pressed);
 	}
 }
 
