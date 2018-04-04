@@ -53,6 +53,7 @@ void USART_string_transmit(char *string)
 		USART_data_transmit(*string);
 		string++;
 	}
+	USART_data_transmit(';');
 }
 
 /*
@@ -67,7 +68,7 @@ unsigned char USART_data_receive(void)					//ez a bibi!!! átnézni!
 	//UBRR0L = (unsigned char)9600;
 	
 	uint8_t tmp;
-	if (tmp = fifo_get_out_data(&receive)) return tmp;
+	if ( (tmp = fifo_get_out_data(&receive)) ) return tmp;
 	else return 0;
 }
 
@@ -76,7 +77,7 @@ uint8_t USART_string_receive(char *buffer)
 	//UBRR0H = (unsigned char)(9600>>8);		// set correct BAUD for receive = 9600
 	//UBRR0L = (unsigned char)9600;
 	uint8_t tmp, counter = 0;
-	while(tmp = USART_data_receive())
+	while( (tmp = USART_data_receive()) )
 	{
 		buffer[counter] = tmp;
 		counter++;
@@ -107,8 +108,7 @@ uint8_t USART_get_sentence(char *buffer)
 ISR(USART_RX_vect)
 {
 	uint8_t tmp = UDR0;
-	//if(tmp == 12) 
-	sentence = 1;
+	if(tmp == ';') sentence = 1;	
 	fifo_put_in_data(&receive, tmp);
 	UDR0 = tmp;
 	

@@ -90,12 +90,12 @@ int main(void)
 	timer1_init();							//timer1 inicializálás
 	lcd_init();								//LCD inicializálása
 	button_init();							//gombok inicializálása (led-nek is)
-	LED_init();
+	//LED_init();
 	ADC_init();								//ADC inicializálása
 	peldanyosit();							//kommentelve fent
 	tombbe_tesz();							//kommentelve fent
 	USART_init(MYUBRR);
-	key_pin_init_pin_low();
+	//key_pin_init_pin_low();
 	
 	
 	uint8_t tmp;
@@ -150,12 +150,20 @@ ISR(TIMER1_COMPA_vect)
 	
 	if (tick_timer1 == 10)
 	{
+		old_data_raw = data_raw;								//******, eltárolja az elõzõ értéket
+		data_raw = get_units(10);
+		ftoa(data_raw,data_grams_tomb,2);
+		lcd_xy(0,0);
+		lcd_Puts("Grams: ");
+		lcd_xy(7,0);
+		lcd_Puts(data_grams_tomb);
+		lcd_Puts(" g");
 		if (has_sentence())
 		{
 			USART_string_receive(receive_string);
 			
-			if(!(strcmp(receive_string, "APP_READY")))		{element = 0;}
-			if(!(strcmp(receive_string, "SEND_DATA")))		{element = 1;}
+			if(!(strcmp(receive_string, "APP_READY;")))		{element = 0;}
+			if(!(strcmp(receive_string, "SEND_DATA;")))		{element = 1;}
 			
 			switch (element)
 			{
@@ -166,103 +174,17 @@ ISR(TIMER1_COMPA_vect)
 				}
 				case 1:
 				{
-					old_data_raw = data_raw;								//******, eltárolja az elõzõ értéket
-					data_raw = get_units(10);
-					ftoa(data_raw,data_grams_tomb,2);
 					USART_string_transmit(data_grams_tomb);
-					USART_string_transmit("DATA");
 					break;
 				}
 				default:
-				{
-					break;
-				}
+				{}
 			}
-			lcd_Puts(receive_string);
+			//lcd_Puts(receive_string);
 			receive_string[0] = '\0';
 		}
 		tick_timer1 = 0;
 	}
-	
-	
-	
-	
-	
-	/*if (menu_select_flag)								//ha megnyomtuk a 3. gombot, csak akkor hajtja végre
-	{
-		//if (data_grams > 0)								//ha nagyobb a kiolvasott, kalibrált, gramm-ban értendõ érték, mint 0, csak akkor írja ki
-		//{
-			lcd_xy(0,0);								//kiírja a grammos értéket, a SZH értéket
-			lcd_Puts("Grams: ");
-			lcd_xy(7,0);
-			lcd_Puts(data_grams_tomb);
-			lcd_Puts(" g");
-			lcd_xy(0,1);
-			lcd_Puts("SZH: ");
-			lcd_xy(7,1);
-			lcd_Puts(data_SZH_tomb);
-			lcd_Puts(" g");								//eddig
-			
-			
-			/*
-			if (communication_flag == 0)				//???????????????????????????????????????
-			{
-				USART_string_transmit("START");
-				communication_flag = 2;
-			}
-			if (communication_flag == 2)
-			{
-				if (has_sentence())
-				{
-					USART_get_sentence(buffer_main1);
-					if (!strcmp(buffer_main1,"READY\n"));
-					{
-						communication_flag = 1;
-					}
-				}
-			}
-			
-			/*if (has_sentence())
-			{
-				USART_get_sentence(buffer_main2);
-				if (!strcmp(buffer_main2,"START\n"))
-				{
-					USART_string_transmit("READY");
-					communication_flag = 1;
-				}
-				lcd_xy(12,1);
-				lcd_Puts(buffer_main2);
-			}*/
-		/*
-			if ((has_sentence()) && (communication_flag == 1))
-			{
-				
-				USART_get_sentence(buffer_main1);
-				if (!strcmp(buffer_main1,"OK"))
-				{
-					USART_string_transmit(data_grams_tomb);
-					USART_string_transmit("OK");
-					buffer_main1[0] = '\0';
-				}
-				lcd_Puts("AAAAAAAA");
-			}																				//?????????????????????
-			
-			tick_timer1 = 0;
-		//}
-		else
-		{
-			lcd_xy(0,0);								//ha negatív, akkor 0.00-t ír ki
-			lcd_Puts("Grams: ");
-			lcd_xy(7,0);
-			lcd_Puts("0.00");
-			lcd_Puts(" g");
-			lcd_xy(0,1);
-			lcd_Puts("SZH: ");
-			lcd_xy(7,1);
-			lcd_Puts("0.00");
-			lcd_Puts(" g");								//eddig
-		}
-	}*/
 }
 
 void timer1_init()
@@ -272,7 +194,7 @@ void timer1_init()
 	TIMSK1 = (1 << OCIE1A);								//CTC mód engedélyez
 	sei();												//interrupt engedélyez
 }
-
+/*
 void menu1(Foods *t)
 {
 	lcd_xy(0,0);									//kiválasztó > jel kitevése
@@ -315,9 +237,9 @@ void menu2(Foods *t)
 		lcd_Puts(data_SZH_tomb);
 		lcd_Puts(" g");
 	}
-	*/
-}
-
+	
+}*/
+/*
 void button()
 {
 			tomb_poz_old = tomb_poz;					//	***  //
@@ -350,7 +272,7 @@ void button()
 			{
 				lcd_write_instruction(lcd_Clear);
 			}
-}
+}*/
 
 void peldanyosit()									//példányosítása a typedef-elt struktúrának
 {	
