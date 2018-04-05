@@ -37,6 +37,14 @@ typedef struct Foods{
 	float SZH_hund;			//szénhidrát 100 gramm-ban
 }Foods;
 
+typedef struct Nutrition{
+	char name[30];
+	float carbohydrate;
+	float calorie;
+	float protein;
+	float fat;
+}Nutrition;
+
 Foods alma;			//1.
 Foods banan;		//2.
 Foods korte;		//3.
@@ -47,6 +55,11 @@ Foods liszt;		//7.
 Foods rizs;			//8.
 Foods spagetti;		//9.
 Foods tarhonya;		//10.
+
+Nutrition nutrition_datas;
+uint8_t nutrition_counter = 0;
+uint8_t nutrition_ready_flag = 0;
+char nutrition_to_LCD[100];
 
 uint16_t tick_timer1 = 0;
 
@@ -62,6 +75,8 @@ float data_grams = 0;								//kiolvasott érték grammban
 float data_SZH = 0;									//kiolvasott érték szénhidrátban
 float old_data_raw = 0;								//összehasonlításhoz használt változó (lsd. lejjebb)
 char data_grams_tomb[16];							//ftoa miatt tömb, grammoknak
+
+
 uint8_t data_grams_length;
 uint8_t old_data_grams_length;
 char data_SZH_tomb[16];								//ftoa miatt tömb,SZH-nak
@@ -146,6 +161,7 @@ ISR(TIMER1_COMPA_vect)
 			
 			if(!(strcmp(receive_string, "APP_READY;")))		{element = 0;}
 			if(!(strcmp(receive_string, "SEND_DATA;")))		{element = 1;}
+			if(!(strcmp(receive_string, "NUT;")))			{element = 2;}
 			
 			switch (element)
 			{
@@ -157,6 +173,61 @@ ISR(TIMER1_COMPA_vect)
 				case 1:
 				{
 					USART_string_transmit(data_grams_tomb);
+					break;
+				}
+				case 2:
+				{
+					USART_string_transmit("NUT_READY");
+					element = 3;
+					//nutrition_ready_flag = 1;
+					break;
+				}
+				case 3:
+				{
+					if(nutrition_ready_flag)
+					{
+						USART_string_transmit("NXT");	
+						nutrition_ready_flag = 0;
+					}
+					nutrition_counter++;
+					lcd_xy(0,0);
+					lcd_write_character(element);
+					lcd_xy(3,0);
+					lcd_Puts(receive_string);
+					switch (nutrition_counter)
+					{
+						case 1:
+						{
+							strcpy(nutrition_datas.name, receive_string);
+							nutrition_ready_flag = 1;
+							break;
+						}
+						case 2:
+						{
+							nutrition_datas.carbohydrate = atof(receive_string);
+							nutrition_ready_flag = 1;
+							break;
+						}
+						case 3:
+						{
+							nutrition_datas.calorie = atof(receive_string);
+							nutrition_ready_flag = 1;
+							break;
+						}
+						case 4:
+						{
+							nutrition_datas.protein = atof(receive_string);
+							nutrition_ready_flag = 1;
+							break;
+						}
+						case 5:
+						{
+							nutrition_datas.fat = atof(receive_string);
+							nutrition_ready_flag = 1;
+							nutrition_counter = 0;
+							break;
+						}
+					}
 					break;
 				}
 				default:
