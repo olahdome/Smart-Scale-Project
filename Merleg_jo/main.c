@@ -37,14 +37,6 @@ typedef struct Foods{
 	float SZH_hund;			//szénhidrát 100 gramm-ban
 }Foods;
 
-typedef struct Nutrition{
-	char name[30];
-	float carbohydrate;
-	float calorie;
-	float protein;
-	float fat;
-}Nutrition;
-
 Foods alma;			//1.
 Foods banan;		//2.
 Foods korte;		//3.
@@ -56,10 +48,10 @@ Foods rizs;			//8.
 Foods spagetti;		//9.
 Foods tarhonya;		//10.
 
-Nutrition nutrition_datas;
+char nutrition_name[100];
+double nutrition_value[4];
 uint8_t nutrition_counter = 0;
-uint8_t nutrition_ready_flag = 0;
-char nutrition_to_LCD[100];
+uint8_t nutrition_name_flag = 1;
 
 uint16_t tick_timer1 = 0;
 
@@ -88,6 +80,8 @@ void menu1(Foods *);								//lista menü, kiválasztandó kajára mutató pointer
 void menu2(Foods *);								//részletes (detailed) menü
 void button(void);									//gombokat vizsgálja, hogy megnyomtuk e (részletes leírás a függvénynél)
 
+void run_USART(void);
+
 void recieve_mode(void);
 
 char string_rec[10];
@@ -102,6 +96,9 @@ char receive_string[100];
 
 int main(void)
 {
+	DDRB |= (1 << PORTB5);
+	PORTB &= ~(1 << PORTB5);
+	
 	timer1_init();							//timer1 inicializálás
 	lcd_init();								//LCD inicializálása
 	button_init();							//gombok inicializálása (led-nek is)
@@ -113,12 +110,12 @@ int main(void)
 	//key_pin_init_pin_low();
 	tare(10);
 	
-	
 	uint8_t tmp;
 	uint8_t index = 0;
 	
 	while(1)									//KIRÁLY! billentyûrõl olvasó usart
 	{
+		run_USART();
 		button();
 	}
 	
@@ -136,9 +133,17 @@ int main(void)
 ISR(TIMER1_COMPA_vect)
 {
 	tick_timer1++;
-	unsigned char element = 254;
-
-	if (tick_timer1 == 10)
+	
+	//if (!(tick_timer1  5))
+	//{	
+		lcd_xy(0,0);
+		lcd_Puts("Grams: ");
+		lcd_xy(7,0);
+		lcd_Puts(data_grams_tomb);
+		//lcd_xy(14,0);
+		lcd_Puts(" g");
+	//}
+	if (tick_timer1 == 50)
 	{
 		old_data_grams_length = data_grams_length;
 		old_data_raw = data_raw;								//******, eltárolja az elõzõ értéket
@@ -149,96 +154,74 @@ ISR(TIMER1_COMPA_vect)
 		{
 			lcd_write_instruction(lcd_Clear);
 		}
-		lcd_xy(0,0);
-		lcd_Puts("Grams: ");
-		lcd_xy(7,0);
-		lcd_Puts(data_grams_tomb);
-		//lcd_xy(14,0);
-		lcd_Puts(" g");
-		if (has_sentence())
-		{
-			USART_string_receive(receive_string);
-			
-			if(!(strcmp(receive_string, "APP_READY;")))		{element = 0;}
-			if(!(strcmp(receive_string, "SEND_DATA;")))		{element = 1;}
-			if(!(strcmp(receive_string, "NUT;")))			{element = 2;}
-			
-			switch (element)
-			{
-				case 0:
-				{
-					USART_string_transmit("PROC_READY");
-					break;
-				}
-				case 1:
-				{
-					USART_string_transmit(data_grams_tomb);
-					break;
-				}
-				case 2:
-				{
-					USART_string_transmit("NUT_READY");
-					element = 3;
-					//nutrition_ready_flag = 1;
-					break;
-				}
-				case 3:
-				{
-					if(nutrition_ready_flag)
-					{
-						USART_string_transmit("NXT");	
-						nutrition_ready_flag = 0;
-					}
-					nutrition_counter++;
-					lcd_xy(0,0);
-					lcd_write_character(element);
-					lcd_xy(3,0);
-					lcd_Puts(receive_string);
-					switch (nutrition_counter)
-					{
-						case 1:
-						{
-							strcpy(nutrition_datas.name, receive_string);
-							nutrition_ready_flag = 1;
-							break;
-						}
-						case 2:
-						{
-							nutrition_datas.carbohydrate = atof(receive_string);
-							nutrition_ready_flag = 1;
-							break;
-						}
-						case 3:
-						{
-							nutrition_datas.calorie = atof(receive_string);
-							nutrition_ready_flag = 1;
-							break;
-						}
-						case 4:
-						{
-							nutrition_datas.protein = atof(receive_string);
-							nutrition_ready_flag = 1;
-							break;
-						}
-						case 5:
-						{
-							nutrition_datas.fat = atof(receive_string);
-							nutrition_ready_flag = 1;
-							nutrition_counter = 0;
-							break;
-						}
-					}
-					break;
-				}
-				default:
-				{}
-			}
-			//lcd_Puts(receive_string);
-			receive_string[0] = '\0';
-		}
 		tick_timer1 = 0;
 	}
 }
+
+void run_USART()
+{
+
+	
+	
+	
+	unsigned char element = 254;
+	
+	if (has_sentence())
+	{
+		USART_string_receive(receive_string);
+				
+		if(!(strcmp(receive_string, "APP_READY;")))		{element = 0;}
+		if(!(strcmp(receive_string, "SEND_DATA;")))		{element = 1;}
+		if(!(strcmp(receive_string, "NUT;")))			{element = 2;}
+				
+		switch (element)
+		{
+			case 0:
+			{
+				USART_string_transmit("PROC_READY");
+				break;
+			}
+			case 1:
+			{
+				USART_string_transmit(data_grams_tomb);
+				break;
+			}
+			case 2:
+			{
+				USART_string_transmit("NUT_READY");
+				element = 3;
+				break;
+			}
+			case 3:
+			{
+				if (nutrition_name_flag)
+				{
+					strcpy(nutrition_name,receive_string);
+					nutrition_name_flag = 0;
+					PORTB |= (1 << PORTB5);
+				}
+				else
+				{
+					nutrition_value[nutrition_counter] = atof(receive_string);
+					nutrition_counter++;
+					if (nutrition_counter == 4)
+					{
+						nutrition_counter = 0;
+						nutrition_name_flag = 1;
+					}
+				}	
+				break;
+			}
+			default:
+			{}
+		}
+		lcd_xy(0,1);
+		lcd_Puts(nutrition_name);
+		//lcd_Puts(receive_string);
+		receive_string[0] = '\0';
+	}
+}
+
 
 void button()
 {
@@ -251,8 +234,9 @@ void button()
 
 void timer1_init()
 {
-	TCCR1B = (1 << WGM12) | (1 << CS12);				//CTC mód, 256-os elõosztás
-	OCR1A = 6249;										//16000000/256/6250 = 10 Hz -> 1/10Hz = 10 ms
+	TCCR1B = (1 << WGM12) | (1 << CS11) | (1 << CS10);	//CTC mód, 64-es elõosztás
+	OCR1A = 5000;										//16000000/64/5000 = 50 Hz -> 1/50Hz = 0,02 s
+														//									   0,02 s-es kell!!!!
 	TIMSK1 = (1 << OCIE1A);								//CTC mód engedélyez
 	sei();												//interrupt engedélyez
 }
