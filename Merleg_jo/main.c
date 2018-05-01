@@ -147,7 +147,7 @@ ISR(TIMER1_COMPA_vect)
 	{
 		old_data_grams_length = data_grams_length;
 		old_data_raw = data_raw;								//******, eltárolja az elõzõ értéket
-		data_raw = get_units(2);
+		data_raw = get_units(1);
 		ftoa(data_raw,data_grams_tomb,2);
 		data_grams_length = strlen(data_grams_tomb);
 		if (old_data_grams_length > data_grams_length)
@@ -160,10 +160,6 @@ ISR(TIMER1_COMPA_vect)
 
 void run_USART()
 {
-
-	
-	
-	
 	unsigned char element = 254;
 	
 	if (has_sentence())
@@ -172,7 +168,7 @@ void run_USART()
 				
 		if(!(strcmp(receive_string, "APP_READY;")))		{element = 0;}
 		if(!(strcmp(receive_string, "SEND_DATA;")))		{element = 1;}
-		if(!(strcmp(receive_string, "NUT;")))			{element = 2;}
+		//if(!(strcmp(receive_string, "NUT;")))			{element = 2;}
 				
 		switch (element)
 		{
@@ -186,7 +182,7 @@ void run_USART()
 				USART_string_transmit(data_grams_tomb);
 				break;
 			}
-			case 2:
+			/*case 2:
 			{
 				USART_string_transmit("NUT_READY");
 				element = 3;
@@ -211,13 +207,13 @@ void run_USART()
 					}
 				}	
 				break;
-			}
+			}*/
 			default:
 			{}
 		}
-		lcd_xy(0,1);
+		/*lcd_xy(0,1);
 		lcd_Puts(nutrition_name);
-		//lcd_Puts(receive_string);
+		//lcd_Puts(receive_string);*/
 		receive_string[0] = '\0';
 	}
 }
@@ -225,9 +221,14 @@ void run_USART()
 
 void button()
 {
+	float test_val = 1;
 	if (btn1_pressed)
 	{
-		tare(5);
+		while (!(test_val <= 0.01 && test_val >= -0.01))
+		{
+			tare(1);
+			test_val = get_units(1);
+		}
 		while (btn1_pressed);
 	}
 }
