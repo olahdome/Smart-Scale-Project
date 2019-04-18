@@ -110,7 +110,8 @@ ISR(USART_RX_vect)
 	uint8_t tmp = UDR0;
 	if(tmp == ';') sentence = 1;	
 	fifo_put_in_data(&receive, tmp);
-	UDR0 = tmp;
+	//UDR0 = 0;
+	//UDR0 = tmp;
 	
 	//fifo_put_in_data(&receive,UDR0);
 	

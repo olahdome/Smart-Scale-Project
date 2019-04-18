@@ -68,6 +68,7 @@ float data_SZH = 0;									//kiolvasott érték szénhidrátban
 float old_data_raw = 0;								//összehasonlításhoz használt változó (lsd. lejjebb)
 char data_grams_tomb[16];							//ftoa miatt tömb, grammoknak
 
+float old_data;
 
 uint8_t data_grams_length;
 uint8_t old_data_grams_length;
@@ -93,6 +94,7 @@ char buffer_main2[16] = {0};
 char string_tomb[16];
 
 char receive_string[100];
+char receive_maybe_stop[100];
 
 int main(void)
 {
@@ -160,14 +162,25 @@ ISR(TIMER1_COMPA_vect)
 
 void run_USART()
 {
+	//cli();
 	unsigned char element = 254;
 	
+	//sei();
 	if (has_sentence())
 	{
-		USART_string_receive(receive_string);
-				
+		if((strcmp(receive_string, "SEND_DATA;")))	
+		{
+			USART_string_receive(receive_string);
+		}
+		//USART_string_receive(receive_maybe_stop);
+		
+		if (old_data == data_raw) return;
+		old_data = data_raw;
+		
 		if(!(strcmp(receive_string, "APP_READY;")))		{element = 0;}
 		if(!(strcmp(receive_string, "SEND_DATA;")))		{element = 1;}
+		//if(!(strcmp(receive_maybe_stop, "STOP_DATA;")))	{element = 2;}
+		
 		//if(!(strcmp(receive_string, "NUT;")))			{element = 2;}
 				
 		switch (element)
@@ -182,6 +195,7 @@ void run_USART()
 				USART_string_transmit(data_grams_tomb);
 				break;
 			}
+			//case 2: break;
 			/*case 2:
 			{
 				USART_string_transmit("NUT_READY");
@@ -214,7 +228,7 @@ void run_USART()
 		/*lcd_xy(0,1);
 		lcd_Puts(nutrition_name);
 		//lcd_Puts(receive_string);*/
-		receive_string[0] = '\0';
+		//receive_string[0] = '\0';
 	}
 }
 
